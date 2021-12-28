@@ -1,18 +1,3 @@
-.App {
-  text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -28,6 +13,38 @@
   color: #61dafb;
 }
 
+.center {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  margin:20px ;
+}
+
+.listVideos {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  float: right;
+  margin-right: 20px;
+}
+
+.inputImg {
+
+  padding-left: 30px;
+  background: url("https://static.thenounproject.com/png/101791-200.png") no-repeat left;
+  background-size: 25px;
+  
+}
+
+.widht60 {
+  max-width: 60%;
+}
+
+.videoPlayer {
+  float: left;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
@@ -36,3 +53,8 @@
     transform: rotate(360deg);
   }
 }
+
+.selector-for-some-widget {
+  box-sizing: content-box;
+}
+
