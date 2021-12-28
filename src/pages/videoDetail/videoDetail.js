@@ -1,14 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import ButtonTag from '../../components/Button/Button';
+import '../../App.css';
+
 
 class videoDetail extends React.Component {
-  //componentDidMount(){
- // }
 
   render(){
     return (
-      <div>
+      <div className='container'>
         <Link to="/">
           <ButtonTag type="Button" value="Detalle"/>
         </Link>

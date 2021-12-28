@@ -89,7 +89,6 @@ class SearchInput extends React.Component {
     super(props);
     this.handleSearchClick = this.handleSearchClick.bind(this);
     this.handleChangeInput = this.handleChangeInput.bind(this);
-
   }
 
   handleChangeInput(e) {
