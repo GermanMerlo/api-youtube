@@ -66,7 +66,7 @@ class MainContainer extends React.Component {
       />     
 
       { isLoaded &&
-        <div>
+        <div className='container'>
           <VideoContainer 
             videoId={videoId} 
             videoTitle={videoTitle} 
@@ -167,7 +167,7 @@ class VideoContainer extends React.Component {
     return(
       <div className='videoPlayer'> 
         <VideoPlayer value={'http://www.youtube.com/embed/' + this.props.videoId + '?enablejsapi=1&origin=http://localhost:3000'} />
-        <div>
+        <div className='titleVideo'>
           <h2>{this.props.videoTitle}</h2>
           <Link to="/videoDetail">
           <ButtonTag type="Button" value="Detalle"/>

@@ -41,17 +41,25 @@
   max-width: 60%;
 }
 
-.videoPlayer {
-  float: left;
+.container {
+  max-width: 100%;
+  width: 100%;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.videoPlayer {
+  float: left;
+  width: 70%;
+  margin-left: 20px;
+  max-height: 100vh;
+  height: 90vh;
+}
+
+.titleVideo {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;  
+  margin-top: 20px;
+
 }
 
 .selector-for-some-widget {
