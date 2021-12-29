@@ -2,6 +2,7 @@ import React from 'react';
 import ButtonTag from './components/Button/Button';
 import youtubeApi from './api/youtubeApi';
 import VideoPlayer from './components/VideoPlayer/videoPlayer';
+import Alert from './components/Alert/alert';
 import { Link } from 'react-router-dom';
 import './App.css';
 
@@ -17,7 +18,9 @@ class MainContainer extends React.Component {
       searchInput: '',
       isLoaded: false,
       videos: [],
-      videoId: ''
+      videoId: '',
+      videoTitle: '',
+      videoDsc: ''
 
     }
   }
@@ -28,13 +31,15 @@ class MainContainer extends React.Component {
     });
   }
 
-  handleSubmit(isLoaded, videoId, videoTitle, videoDsc, videos) {
+  handleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videos) {
     this.setState({
       isLoaded: isLoaded,
+      isEmpty: isEmpty,
       videoId: videoId,
       videoTitle: videoTitle,
       videoDsc: videoDsc,
-      videos: videos
+      videos: videos,
+      isEmpty: isEmpty
 
     });
   }
@@ -55,16 +60,18 @@ class MainContainer extends React.Component {
     const videoId = this.state.videoId;
     const videoTitle = this.state.videoTitle;
     const videoDsc = this.state.videoDsc;
-
+    const isEmpty = this.state.isEmpty;
 
     return (
     <div>
+      { isEmpty &&
+        <Alert value='Debe completar el campo de busqueda' />
+      }
       <SearchInput
         searchInput={this.state.searchInput}
         onInputChange={this.handleChangeInput}
         onhandleSubmit={this.handleSubmit}
-      />     
-
+      />
       { isLoaded &&
         <div className='container'>
           <VideoContainer 
@@ -102,24 +109,35 @@ class SearchInput extends React.Component {
     let videoTitle;
     let videoDsc;
     let videos; 
+    let response;
+    let isLoaded = false;
+    let isEmpty = false;
 
-    const response = await youtubeApi.get('/search', {
-      params: {
-        q: this.props.searchInput
-      }
-    })
-
-    const allVideos = response.data.items;
+    if (this.props.searchInput != '') {
+      response = await youtubeApi.get('/search', {
+        params: {
+          q: this.props.searchInput
+        }
+      })
+      
+      const allVideos = response.data.items;
     
-    allVideos.slice(0, 1).map(video => {
-      videoId = video.id.videoId
-      videoTitle = video.snippet.title
-      videoDsc = video.snippet.description
-    });
+      allVideos.slice(0, 1).map(video => {
+        videoId = video.id.videoId
+        videoTitle = video.snippet.title
+        videoDsc = video.snippet.description
+      });
+  
+      videos = allVideos.slice(1)
+      isLoaded = true;
 
-    videos = allVideos.slice(1)
+    }else{
 
-    this.props.onhandleSubmit(true, videoId, videoTitle, videoDsc, videos);
+      isEmpty = true;
+
+    }
+
+    this.props.onhandleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videos);
 
   }
 
@@ -146,7 +164,7 @@ class ListVideos extends React.Component {
 
   render() {
     return (
-      <div className='listVideos'>
+      <div>
         {this.props.value.map((video) => (
           <div key={video.id.videoId} className='card' style={{width: '20rem'}}>
             <img src={video.snippet.thumbnails.high.url} style={{cursor: 'pointer'}} className='card-img-top' onClick={() => this.handleClick(video) } />
