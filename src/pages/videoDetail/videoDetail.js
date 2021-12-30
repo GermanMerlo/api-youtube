@@ -1,24 +1,19 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import ButtonTag from '../../components/Button/Button';
 import '../../App.css';
 
 
-class videoDetail extends React.Component {
-
-  render(){
-    return (
-      <div className='container'>
-        <Link to="/">
-          <ButtonTag type="Button" value="Detalle"/>
-        </Link>
-        <h2>Titulo del video de Youtube en cuestión</h2>
-        <img src='https://i.ytimg.com/vi/XMW3giznx-U/hqdefault.jpg' />
-        <h5>Descripción del video en cuestión</h5>
-      </div>
-    );
-  }
-
+export default function videoDetail() {
+  let parms = useParams();
+  console.log('Prueba:' + parms);
+  return (
+    <div className='container'>
+      <Link to="/">
+        <ButtonTag type="Button" value="Atrás"/>
+      </Link>
+      <h2>Prueba</h2>
+      <img src={this.props.img} />
+      <h5>Prueba</h5>
+    </div>
+  );
 }
-
-export default videoDetail;

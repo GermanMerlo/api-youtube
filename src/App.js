@@ -38,10 +38,10 @@ class MainContainer extends React.Component {
       videoId: videoId,
       videoTitle: videoTitle,
       videoDsc: videoDsc,
-      videos: videos,
-      isEmpty: isEmpty
+      videos: videos
 
     });
+    const MyContext = React.createContext(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videos);
   }
 
   handlechangeVideo(videoId, videoTitle, videoDsc) {
@@ -186,8 +186,8 @@ class VideoContainer extends React.Component {
         <VideoPlayer value={'http://www.youtube.com/embed/' + this.props.videoId + '?enablejsapi=1&origin=http://localhost:3000'} />
         <div className='titleVideo'>
           <h2>{this.props.videoTitle}</h2>
-          <Link to="/videoDetail">
-          <ButtonTag type="Button" value="Detalle"/>
+          <Link to={`/videoDetail?title=${this.props.videoTitle}`}>
+            <ButtonTag type="Button" value="Detalle"/>
           </Link>
         </div>
       </div>
