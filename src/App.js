@@ -3,7 +3,7 @@ import ButtonTag from './components/Button/Button';
 import youtubeApi from './api/youtubeApi';
 import VideoPlayer from './components/VideoPlayer/videoPlayer';
 import Alert from './components/Alert/alert';
-import { Link } from 'react-router-dom';
+import { Link, Outlet } from 'react-router-dom';
 import './App.css';
 
 class MainContainer extends React.Component {
@@ -31,17 +31,17 @@ class MainContainer extends React.Component {
     });
   }
 
-  handleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videos) {
+  handleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videoImg, videos) {
     this.setState({
       isLoaded: isLoaded,
       isEmpty: isEmpty,
       videoId: videoId,
       videoTitle: videoTitle,
       videoDsc: videoDsc,
+      videoImg: videoImg,
       videos: videos
 
     });
-    const MyContext = React.createContext(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videos);
   }
 
   handlechangeVideo(videoId, videoTitle, videoDsc) {
@@ -61,6 +61,7 @@ class MainContainer extends React.Component {
     const videoTitle = this.state.videoTitle;
     const videoDsc = this.state.videoDsc;
     const isEmpty = this.state.isEmpty;
+    const videoImg = this.state.videoImg;
 
     return (
     <div>
@@ -77,6 +78,7 @@ class MainContainer extends React.Component {
           <VideoContainer 
             videoId={videoId} 
             videoTitle={videoTitle} 
+            videoImg={videoImg}
             videoDsc ={videoDsc}
           />
 
@@ -109,6 +111,7 @@ class SearchInput extends React.Component {
     let videoTitle;
     let videoDsc;
     let videos; 
+    let videoImg;
     let response;
     let isLoaded = false;
     let isEmpty = false;
@@ -116,6 +119,8 @@ class SearchInput extends React.Component {
     if (this.props.searchInput != '') {
       response = await youtubeApi.get('/search', {
         params: {
+          type: 'video',
+          maxResults: '4',
           q: this.props.searchInput
         }
       })
@@ -126,10 +131,13 @@ class SearchInput extends React.Component {
         videoId = video.id.videoId
         videoTitle = video.snippet.title
         videoDsc = video.snippet.description
+        videoImg = video.snippet.thumbnails.high.url
       });
   
       videos = allVideos.slice(1)
       isLoaded = true;
+
+      
 
     }else{
 
@@ -137,7 +145,7 @@ class SearchInput extends React.Component {
 
     }
 
-    this.props.onhandleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videos);
+    this.props.onhandleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videoImg, videos);
 
   }
 
@@ -186,9 +194,10 @@ class VideoContainer extends React.Component {
         <VideoPlayer value={'http://www.youtube.com/embed/' + this.props.videoId + '?enablejsapi=1&origin=http://localhost:3000'} />
         <div className='titleVideo'>
           <h2>{this.props.videoTitle}</h2>
-          <Link to={`/videoDetail?title=${this.props.videoTitle}`}>
+          <Link to={`/videoDetail/${this.props.videoId}`}>
             <ButtonTag type="Button" value="Detalle"/>
           </Link>
+          <Outlet />
         </div>
       </div>
     )

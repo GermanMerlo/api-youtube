@@ -9,7 +9,7 @@ ReactDOM.render(
   <BrowserRouter>
     <Routes>
       <Route path="/" element={<App />}/>  
-      <Route path="videoDetail" element={<VideoDetail/>}/>
+      <Route path="/videoDetail/:videoId" element={<VideoDetail/>}/>
     </Routes>
   </BrowserRouter>,
   document.getElementById('root')
