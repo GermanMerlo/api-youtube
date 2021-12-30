@@ -2,8 +2,8 @@
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  justify-content: center;
-  margin:20px ;
+  justify-content: center; 
+  margin:20px;
 }
 
 .listVideos {
@@ -33,6 +33,23 @@
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-evenly;
+}
+
+.containerDetail {
+  max-width: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-evenly;
+}
+
+.image {
+  max-width: 50%;
+  width: auto;
+  max-height: 60%;
+  height: auto;
+
 }
 
 .titleVideo {

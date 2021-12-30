@@ -1,27 +1,43 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ButtonTag from './components/Button/Button';
 import youtubeApi from './api/youtubeApi';
 import VideoPlayer from './components/VideoPlayer/videoPlayer';
 import Alert from './components/Alert/alert';
 import { Link, Outlet } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { saveData } from './actions';
 import './App.css';
 
 class MainContainer extends React.Component {
   constructor(props) {
     super(props);
 
+    const allVideos = this.props.value;
+    const dispatch = this.props.dispatch;
+
     this.handleChangeInput = this.handleChangeInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlechangeVideo = this.handlechangeVideo.bind(this);
 
-    this.state = {
-      searchInput: '',
-      isLoaded: false,
-      videos: [],
-      videoId: '',
-      videoTitle: '',
-      videoDsc: ''
-
+    if (allVideos.length > 0) {
+      this.state = {
+        searchInput: '',
+        isLoaded: true,
+        videos: allVideos,
+        videoId: '',
+        videoTitle: '',
+        videoDsc: ''
+      }
+    }else{
+      this.state = {
+        searchInput: '',
+        isLoaded: false,
+        videos: [],
+        videoId: '',
+        videoTitle: '',
+        videoDsc: ''
+  
+      }
     }
   }
 
@@ -64,7 +80,7 @@ class MainContainer extends React.Component {
     const videoImg = this.state.videoImg;
 
     return (
-    <div>
+    <div >
       { isEmpty &&
         <Alert value='Debe completar el campo de busqueda' />
       }
@@ -76,6 +92,7 @@ class MainContainer extends React.Component {
       { isLoaded &&
         <div className='container'>
           <VideoContainer 
+            videos={videos}
             videoId={videoId} 
             videoTitle={videoTitle} 
             videoImg={videoImg}
@@ -137,8 +154,6 @@ class SearchInput extends React.Component {
       videos = allVideos.slice(1)
       isLoaded = true;
 
-      
-
     }else{
 
       isEmpty = true;
@@ -195,7 +210,7 @@ class VideoContainer extends React.Component {
         <div className='titleVideo'>
           <h2>{this.props.videoTitle}</h2>
           <Link to={`/videoDetail/${this.props.videoId}`}>
-            <ButtonTag type="Button" value="Detalle"/>
+            <ButtonTag type="Button" value="Detalle" onClick={() => useDispatch(saveData(this.props.videos))} />
           </Link>
           <Outlet />
         </div>
@@ -205,8 +220,12 @@ class VideoContainer extends React.Component {
 }
 
 function App() {
+
+  const allVideos = useSelector(state => state.allVideos);
+  const dispatch = useDispatch();
+
   return (
-    <MainContainer />
+    <MainContainer  value={allVideos} dispatch={dispatch}/>
   );
 }
 
