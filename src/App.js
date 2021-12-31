@@ -1,14 +1,12 @@
-import React, { useState } from 'react';
-import ButtonTag from './components/Button/Button';
+import React from 'react';
 import youtubeApi from './api/youtubeApi';
 import VideoPlayer from './components/VideoPlayer/videoPlayer';
 import Alert from './components/Alert/alert';
-import { Link, Outlet } from 'react-router-dom';
-import { useDispatch, connect } from 'react-redux';
-import { savedata } from './actions';
+import { Link } from 'react-router-dom';
+import { connect } from 'react-redux';
 import './App.css';
 
-class MainContainer extends React.Component {
+class App extends React.Component {
   constructor(props) {
     super(props);
 
@@ -17,14 +15,63 @@ class MainContainer extends React.Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlechangeVideo = this.handlechangeVideo.bind(this);
 
+    const stateVideos = this.props.allVideos;
+    const searchInput = this.props.searchInput;
+    const counter = this.props.value;
+    const dispatch = this.props.dispatch;
+    const videoId = this.props.videoId;
+      
+    if (stateVideos.length > 0) {
+
+      let videoTitle;
+      let videoDsc;
+
+      const counter = this.props.counter;
+      const allVideos = stateVideos.slice();
+      let indexItem;
+
+      stateVideos.map((video, index) => {
+        if (videoId == video.id.videoId){
+
+          videoTitle = video.snippet.title
+          videoDsc = video.snippet.description
+          indexItem = index
+
+        }
+      });
+
+      
+      if (indexItem !== -1) {
+        stateVideos.splice(indexItem, 1);      
+      }
+
+      this.state = {
+        searchInput: searchInput,
+        isLoaded: true,
+        listVideos: stateVideos,
+        videoId: videoId,
+        videoTitle: videoTitle,
+        videoDsc: videoDsc,
+        counter: counter,
+        dispatch: dispatch,
+        allVideos: allVideos
+
+      }
+
+    }else{
+
       this.state = {
         searchInput: '',
         isLoaded: false,
-        videos: [],
+        listVideos: [],
+        allVideos: [],
         videoId: '',
         videoTitle: '',
-        videoDsc: ''
-  
+        videoDsc: '',
+        counter: counter,
+        dispatch: dispatch
+      }
+
     }
   }
 
@@ -34,7 +81,20 @@ class MainContainer extends React.Component {
     });
   }
 
-  handleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videoImg, videos) {
+  handleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videoImg, allVideos) {
+
+    let videos;
+
+    if (allVideos.length > 0){
+      videos = allVideos.slice(1);
+    }else{
+      videos = [];
+    }
+
+    const counter = this.props.value;
+
+    this.props.dispatch({ type: "SAVE_VIDEOS_WATCHED"})
+
     this.setState({
       isLoaded: isLoaded,
       isEmpty: isEmpty,
@@ -42,29 +102,54 @@ class MainContainer extends React.Component {
       videoTitle: videoTitle,
       videoDsc: videoDsc,
       videoImg: videoImg,
-      videos: videos
+      allVideos: allVideos,      
+      listVideos: videos,
+      counter: counter
 
     });
+
   }
 
   handlechangeVideo(videoId, videoTitle, videoDsc) {
+
+    const allVideos = this.state.allVideos.slice();
+    const counter = this.props.counter;
+    let indexItem;
+
+    allVideos.map((video, index) => {
+      if (videoId == video.id.videoId){
+        indexItem = index
+      }
+    });
+
+    if (indexItem !== -1) {
+      allVideos.splice(indexItem, 1);      
+    }
+    
     this.setState({
       videoId: videoId,
       videoTitle: videoTitle,
       videoDsc: videoDsc,
-
+      counter: counter,
+      listVideos: allVideos
     });
+
   }
 
   render() {
 
     const isLoaded = this.state.isLoaded;
-    const videos = this.state.videos;
+    const videos = this.state.listVideos;
+    const allVideos = this.state.allVideos;
     const videoId = this.state.videoId;
     const videoTitle = this.state.videoTitle;
     const videoDsc = this.state.videoDsc;
     const isEmpty = this.state.isEmpty;
     const videoImg = this.state.videoImg;
+    const searchInput = this.state.searchInput;
+    const counter = this.props.value;
+    const dispatch = this.state.dispatch;
+    
 
     return (
     <div >
@@ -72,22 +157,27 @@ class MainContainer extends React.Component {
         <Alert value='Debe completar el campo de busqueda' />
       }
       <SearchInput
-        searchInput={this.state.searchInput}
+        searchInput={searchInput}
+        counter={counter}
+        dispatch={dispatch}
         onInputChange={this.handleChangeInput}
         onhandleSubmit={this.handleSubmit}
       />
       { isLoaded &&
         <div className='container'>
           <VideoContainer 
-            videos={videos}
+            allVideos={allVideos}
             videoId={videoId} 
             videoTitle={videoTitle} 
             videoImg={videoImg}
-            videoDsc ={videoDsc}
-          />
-
+            videoDsc={videoDsc}
+            searchInput={searchInput}
+            dispatch={dispatch}            
+          />          
           <ListVideos 
             value={videos}
+            counter={counter}
+            dispatch={dispatch}
             onChangeVideo={this.handlechangeVideo}
           />
         </div>
@@ -108,17 +198,22 @@ class SearchInput extends React.Component {
     this.props.onInputChange(e.target.value);
   }
 
+  serachInput = () => {
+    this.props.dispatch({ type: "SAVE_SEARCH_INPUT", payload: this.props.searchInput})
+  }
+
   handleSearchClick = async event => {
     event.preventDefault();
 
     let videoId;
     let videoTitle;
     let videoDsc;
-    let videos; 
     let videoImg;
     let response;
     let isLoaded = false;
     let isEmpty = false;
+    let allVideos;
+    const counter = this.props.counter;
 
     if (this.props.searchInput != '') {
       response = await youtubeApi.get('/search', {
@@ -129,7 +224,7 @@ class SearchInput extends React.Component {
         }
       })
       
-      const allVideos = response.data.items;
+      allVideos = response.data.items;
     
       allVideos.slice(0, 1).map(video => {
         videoId = video.id.videoId
@@ -138,16 +233,16 @@ class SearchInput extends React.Component {
         videoImg = video.snippet.thumbnails.high.url
       });
   
-      videos = allVideos.slice(1)
       isLoaded = true;
 
     }else{
 
+      allVideos = [];
       isEmpty = true;
 
     }
 
-    this.props.onhandleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videoImg, videos);
+    this.props.onhandleSubmit(isLoaded, isEmpty, videoId, videoTitle, videoDsc, videoImg, allVideos, counter);
 
   }
 
@@ -155,7 +250,7 @@ class SearchInput extends React.Component {
     return (
       <form className="center" onSubmit={this.handleSearchClick}>
         <input type="text" className="inputImg widht60 form-control" placeholder='Search...' value={this.props.searchInput} onChange={this.handleChangeInput} />
-        <ButtonTag type="Submit" value="Search" />
+        <input className="btn btn-primary" type="Submit" value="Buscar" onClick={this.serachInput}></input>
       </form>
     );
   }
@@ -169,12 +264,16 @@ class ListVideos extends React.Component {
   }
 
   handleClick(video) {
+    window.scrollTo(0, 0);
+    this.props.dispatch({ type: "SAVE_VIDEOS_WATCHED"})
     this.props.onChangeVideo(video.id.videoId, video.snippet.title, video.snippet.description);
   }
 
   render() {
+    const counter = this.props.counter;
     return (
-      <div>
+      <div className='listVideos'>
+        <span className='counter'>Videos watched: {counter}</span>
         {this.props.value.map((video) => (
           <div key={video.id.videoId} className='card' style={{width: '20rem'}}>
             <img src={video.snippet.thumbnails.high.url} style={{cursor: 'pointer'}} className='card-img-top' onClick={() => this.handleClick(video) } />
@@ -182,7 +281,7 @@ class ListVideos extends React.Component {
               <h5>{video.snippet.title}</h5>
             </div>
           </div>
-        ))}
+        ))}        
       </div>
     );
   }
@@ -190,14 +289,24 @@ class ListVideos extends React.Component {
 
 
 class VideoContainer extends React.Component {
+
+  saveData = () => {
+    this.props.dispatch({ type: "SAVE_DATA", payload: this.props.allVideos })
+    {this.props.dispatch({ type: "SAVE_VIDEO_ID", payload: this.props.videoId })}
+  }
+
+
   render() {
-    const videos = this.props.videos;
     return(
-      <div className='videoPlayer'> 
-        <VideoPlayer value={'http://www.youtube.com/embed/' + this.props.videoId + '?enablejsapi=1&origin=http://localhost:3000'} />
+      <div className='containerVideo'>
+        <div className='videoPlayer'> 
+          <VideoPlayer value={'http://www.youtube.com/embed/' + this.props.videoId + '?enablejsapi=1&origin=http://localhost:3000'} />
+        </div>
         <div className='titleVideo'>
           <h2>{this.props.videoTitle}</h2>
-          <button onClick={() => dispatch({ type: 'SAVE_DATA' })}>Detalle</button>
+          <Link to={`/videoDetail/${this.props.videoId}`}>
+            <input className="btn btn-primary" type="Button" value="Detalle" onClick={this.saveData}></input>
+          </Link>
         </div>
       </div>
     )
@@ -205,21 +314,12 @@ class VideoContainer extends React.Component {
 }
 
 const mapStateToProps = state => ({
-  allVideos: state.allVideos
+  allVideos: state.allVideos,
+  searchInput: state.searchInput,
+  counter: state.counter,
+  videoId: state.videoId
+
 });
 
-const mapDispatchToProps = () => ({ 
-  savedata
-});
-
-
-function App() {
-  return (
-    <div>      
-      <MainContainer />
-    </div>
-  );
-}
-
-export default connect(mapStateToProps, mapDispatchToProps()) (App);
+export default connect(mapStateToProps)(App);
 

@@ -1,7 +1,7 @@
-const saveDataReducer = (state = 0, action) => {
+const saveDataReducer = (state = [], action) => {
   switch (action.type) {
     case 'SAVE_DATA':
-      return state + 1;
+      return action.payload;
     default:
       return state;
   }

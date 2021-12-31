@@ -10,3 +10,17 @@ export const savesearchinput = (dataInput) => {
         payload: dataInput
     };
 };
+
+export const videosWatched = (dataInput) => {
+    return {
+        type: 'SAVE_VIDEOS_WATCHED',
+        payload: dataInput
+    };
+};
+
+export const saveVideoId = (dataInput) => {
+    return {
+        type: 'SAVE_VIDEO_ID',
+        payload: dataInput
+    };
+};
