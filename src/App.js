@@ -39,7 +39,6 @@ class App extends React.Component {
 
         }
       });
-
       
       if (indexItem !== -1) {
         stateVideos.splice(indexItem, 1);      
@@ -91,7 +90,7 @@ class App extends React.Component {
       videos = [];
     }
 
-    const counter = this.props.value;
+    const counter = this.props.counter;
 
     this.props.dispatch({ type: "SAVE_VIDEOS_WATCHED"})
 
@@ -147,7 +146,7 @@ class App extends React.Component {
     const isEmpty = this.state.isEmpty;
     const videoImg = this.state.videoImg;
     const searchInput = this.state.searchInput;
-    const counter = this.props.value;
+    const counter = this.state.counter;
     const dispatch = this.state.dispatch;
     
 
@@ -213,7 +212,7 @@ class SearchInput extends React.Component {
     let isLoaded = false;
     let isEmpty = false;
     let allVideos;
-    const counter = this.props.counter;
+    let counter = this.props.counter;
 
     if (this.props.searchInput != '') {
       response = await youtubeApi.get('/search', {
