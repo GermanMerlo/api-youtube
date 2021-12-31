@@ -1,11 +1,10 @@
-export const saveData = (dataVideos) => {
+export const savedata = () => {
     return {
-        type: 'SAVE_DATA',
-        payload: dataVideos
+        type: 'SAVE_DATA'
     };
 };
 
-export const saveSearchInput = (dataInput) => {
+export const savesearchinput = (dataInput) => {
     return {
         type: 'SAVE_SEARCH_INPUT',
         payload: dataInput

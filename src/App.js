@@ -4,31 +4,19 @@ import youtubeApi from './api/youtubeApi';
 import VideoPlayer from './components/VideoPlayer/videoPlayer';
 import Alert from './components/Alert/alert';
 import { Link, Outlet } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import { saveData } from './actions';
+import { useDispatch, connect } from 'react-redux';
+import { savedata } from './actions';
 import './App.css';
 
 class MainContainer extends React.Component {
   constructor(props) {
     super(props);
 
-    const allVideos = this.props.value;
-    const dispatch = this.props.dispatch;
 
     this.handleChangeInput = this.handleChangeInput.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handlechangeVideo = this.handlechangeVideo.bind(this);
 
-    if (allVideos.length > 0) {
-      this.state = {
-        searchInput: '',
-        isLoaded: true,
-        videos: allVideos,
-        videoId: '',
-        videoTitle: '',
-        videoDsc: ''
-      }
-    }else{
       this.state = {
         searchInput: '',
         isLoaded: false,
@@ -37,7 +25,6 @@ class MainContainer extends React.Component {
         videoTitle: '',
         videoDsc: ''
   
-      }
     }
   }
 
@@ -204,30 +191,35 @@ class ListVideos extends React.Component {
 
 class VideoContainer extends React.Component {
   render() {
+    const videos = this.props.videos;
     return(
       <div className='videoPlayer'> 
         <VideoPlayer value={'http://www.youtube.com/embed/' + this.props.videoId + '?enablejsapi=1&origin=http://localhost:3000'} />
         <div className='titleVideo'>
           <h2>{this.props.videoTitle}</h2>
-          <Link to={`/videoDetail/${this.props.videoId}`}>
-            <ButtonTag type="Button" value="Detalle" onClick={() => useDispatch(saveData(this.props.videos))} />
-          </Link>
-          <Outlet />
+          <button onClick={() => dispatch({ type: 'SAVE_DATA' })}>Detalle</button>
         </div>
       </div>
     )
   }
 }
 
+const mapStateToProps = state => ({
+  allVideos: state.allVideos
+});
+
+const mapDispatchToProps = () => ({ 
+  savedata
+});
+
+
 function App() {
-
-  const allVideos = useSelector(state => state.allVideos);
-  const dispatch = useDispatch();
-
   return (
-    <MainContainer  value={allVideos} dispatch={dispatch}/>
+    <div>      
+      <MainContainer />
+    </div>
   );
 }
 
-export default App; 
+export default connect(mapStateToProps, mapDispatchToProps()) (App);
 
