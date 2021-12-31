@@ -42,9 +42,11 @@ class VideoDetail extends React.Component {
         <Link to="/">
           <ButtonTag type="Button" value="Atrás"/>
         </Link>
-        <h2>{videotitle}</h2>
-        <img className='image' src={videoImg}></img>
-        <h5>{videoDsc}</h5>
+        <div className='containerVideo'>
+          <span className='titleVideo'>{videotitle}</span>
+          <img className='image' src={videoImg}></img>
+          <p className='description'>{videoDsc}</p>
+        </div>
       </div>
     );
   }
